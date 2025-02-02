@@ -130,3 +130,25 @@ data = """av=17841461002400656&__d=www&__user=0&__a=1&__req=7&__hs=20121.HYP%3Ai
 
 # Call the function
 last_post_id = get_post_id(cookies, headers, data)
+
+
+#function for opening
+def open_last_post(last_post_id, cookies, headers, data):
+    # Define the URL for the last post
+    url = f"https://www.instagram.com/p/{last_post_id}"
+    
+    # Create a session and add cookies
+    session = requests.Session()
+    session.cookies.update(cookies)
+    
+    # Send the POST request
+    response = session.post(url, headers=headers, data=data)
+    
+    return response
+
+# Example usage
+last_post_id = "DFi3K0jRfwH"  # Replace with the last post ID
+
+# Call the function
+response = open_last_post(last_post_id, cookies, headers, data)
+    
