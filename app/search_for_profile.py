@@ -11,9 +11,6 @@ with open('cookies.json', 'r') as file:
     cookies = json.load(file)
 
 
-#url = "https://www.instagram.com/graphql/query"
-
-
 # default headers
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
@@ -63,45 +60,42 @@ data = {
 
 
 
-# Input the username you want to search for
+# function to find and access a user profile by its username
+def load_profile_page(username, cookies, headers, data):
+    # Create a session instance
+    session = requests.Session()
+
+    # Define the URL for the user's profile
+    profile_url = f"https://www.instagram.com/{username}/"
+
+    # Add cookies to session
+    session.cookies.update(cookies)
+
+    # Send the POST request
+    response = session.post(profile_url, headers=headers, data=data)
+
+    # Check the response status
+    if response.status_code == 200:
+        print(f"Successfully loaded profile page for {username}")
+        # You can now parse the HTML, interact with it, or scrape data
+    else:
+        print(f"Failed to load profile page for {username}. Status code: {response.status_code}")
+
+    # Get new cookies
+    updated_cookies = session.cookies.get_dict()
+
+    # Merge old and new cookies (update only changed fields)
+    cookies.update(updated_cookies)
+
+    # Save updated cookies back to file
+    with open("cookies.json", "w") as f:
+        json.dump(cookies, f, indent=4)
+
+# Example usage
 username = "abugarcia_fishing"  # Replace with the actual username you want to search
 
-# Define the URL for the user's profile
-profile_url = f"https://www.instagram.com/{username}/"
-
-
-# Make a POST request to the Instagram profile URL with the prepared headers and data
-response = session.post(profile_url, headers=headers, data=data, cookies=cookies)
+# Call the function
+load_profile_page(username, cookies, headers, data)
 
 
 
-# Check the response status
-if response.status_code == 200:
-    print(f"Successfully loaded profile page for {username}")
-else:
-    print(f"Failed to load profile page for {username}. Status code: {response.status_code}")
-
-
-# Get new cookies
-updated_cookies = session.cookies.get_dict()
-
-# Merge old and new cookies (update only changed fields)
-cookies.update(updated_cookies)
-
-# Save updated cookies back to file
-with open("cookies.json", "w") as f:
-    json.dump(cookies, f, indent=4)
-
-
-
-
-
-'''
-# Update header from response.headers (if new or updated fields exist)
-for header_name, header_value in response.headers.items():
-    # You may choose to only update certain headers (e.g., security-related headers)
-    # If the header is not in the current headers, or if it's been updated, add or update it
-    if header_name not in headers:
-        headers[header_name] = header_value
-    else:
-        headers[header_name] = header_value'''
