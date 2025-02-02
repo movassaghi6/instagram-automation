@@ -98,7 +98,7 @@ username = "abugarcia_fishing"  # Replace with the actual username you want to s
 load_profile_page(username, cookies, headers, data)
 
 
-# function for opening the latest post in a users profile
+# function for accessing id of the latest post in a users profile
 def get_post_id(cookies, headers, data):
     # Define the URL
     profile_url = "https://www.instagram.com/graphql/query"
