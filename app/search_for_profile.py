@@ -98,4 +98,35 @@ username = "abugarcia_fishing"  # Replace with the actual username you want to s
 load_profile_page(username, cookies, headers, data)
 
 
+# function for opening the latest post in a users profile
+def get_post_id(cookies, headers, data):
+    # Define the URL
+    profile_url = "https://www.instagram.com/graphql/query"
+    
+    # Create a session and add cookies
+    session = requests.Session()
+    session.cookies.update(cookies)
+    
+    # Send the POST request
+    response = session.post(profile_url, headers=headers, data=data)
+    
+    # Check for successful response
+    if response.status_code == 200:
+        # Parse JSON response
+        json_data = response.json()
+        
+        # Accessing the value
+        code = json_data.get('data', {}).get('xdt_api__v1__feed__user_timeline_graphql_connection', {}).get('edges', [])
+        if code:
+            code_value = code[0].get('node', {}).get('code')
+            return code_value
+        else:
+            return "Key not found!"
+    else:
+        return f"Error: {response.status_code}"
 
+# data provided from cURL of the request
+data = """av=17841461002400656&__d=www&__user=0&__a=1&__req=7&__hs=20121.HYP%3Ainstagram_web_pkg.2.1...1&dpr=1&__ccg=MODERATE&__rev=1019772043&__s=4rquec%3Arzn4z9%3Ahvqkfh&__hsi=7466797561635021871&__dyn=7xe5WwlEnwn8K2Wmm1twpUnwgU7S6EeUaUco38w5ux609vCwjE1EE2Cw8G11w6zx62G3i1ywOwa90Fw4Hw9O0M82zxe2GewGw9a361qw8W5U4q09yyES1Twoob82ZwrUdUbGw4mwr86C1mwrd6goK10xKi2K7E5y4UrwHwcObBxm&__csr=&__comet_req=7&fb_dtsg=NAcMX8y-70vfn9Y2yeZt27RlxoaAzjQ4tzgiZuh_HaMSEPGNcYwOrjw%3A17858449030071790%3A1738410193&jazoest=26461&lsd=ThneM-hsSbTaKh7Ina08NP&__spin_r=1019772043&__spin_b=trunk&__spin_t=1738499282&fb_api_caller_class=RelayModern&fb_api_req_friendly_name=PolarisProfilePostsQuery&variables=%7B%22data%22%3A%7B%22count%22%3A12%2C%22include_reel_media_seen_timestamp%22%3Atrue%2C%22include_relationship_info%22%3Atrue%2C%22latest_besties_reel_media%22%3Atrue%2C%22latest_reel_media%22%3Atrue%7D%2C%22username%22%3A%22abugarcia_fishing%22%2C%22__relay_internal__pv__PolarisIsLoggedInrelayprovider%22%3Atrue%7D&server_timestamps=true&doc_id=8934560356598281"""
+
+# Call the function
+last_post_id = get_post_id(cookies, headers, data)
