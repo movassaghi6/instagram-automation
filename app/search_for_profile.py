@@ -151,4 +151,42 @@ last_post_id = "DFi3K0jRfwH"  # Replace with the last post ID
 
 # Call the function
 response = open_last_post(last_post_id, cookies, headers, data)
+
+
+# function for liking latest post
+def like_post(url, cookies, headers):
+    # Create a session and add cookies
+    session = requests.Session()
+    session.cookies.update(cookies)
+
+    # Define the new referer URL
+    new_referer = 'https://www.instagram.com/p/DFi3K0jRfwH/'
+
+    # Check if 'Referer' is in the headers and update it, otherwise add it
+    if 'Referer' in headers:
+        headers['Referer'] = new_referer  # Update the existing Referer value
+    else:
+        headers['Referer'] = new_referer  # Add the Referer if not present
+
+    # Send the POST request
+    response = session.post(url, headers=headers)
+
+    # Check if the status code is 200
+    if response.status_code == 200:
+        print("Like completed successfully!")
+    else:
+        # Handle different error scenarios
+        print(f"Error: {response.status_code}")
+        try:
+            # Try to parse the response as JSON to get more error details
+            error_details = response.json()
+            print("Error details:", error_details)
+        except ValueError:
+            # If the response is not JSON, just print the text content
+            print("Response content:", response.text)
+
+# Example usage
+url = "https://www.instagram.com//api/v1/web/likes/3558649291755355143/like/"
+
+like_post(url, cookies, headers)
     
