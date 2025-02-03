@@ -39,6 +39,24 @@ def update_and_save_cookies(session, updated_cookies=None, file_path="cookies.js
         json.dump(cookies, file, indent=4)
 
 
+# function for updating or adding extra fields to data
+def update_data(base_data, **kwargs):
+    """
+    Updates the base data dictionary dynamically with new key-value pairs.
+    
+    Args:
+        base_data (dict): The initial data dictionary.
+        **kwargs: Additional fields to update or add dynamically.
+
+    Returns:
+        dict: The updated data dictionary.
+    """
+    updated_data = base_data.copy()  # Avoid modifying the original dictionary
+    updated_data.update(kwargs)
+    return updated_data
+
+
+
 # default headers
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
