@@ -11,6 +11,34 @@ with open('cookies.json', 'r') as file:
     cookies = json.load(file)
 
 
+def update_and_save_cookies(session, updated_cookies=None, file_path="cookies.json"):
+    """
+    Updates the session with new cookies, merges them with existing cookies,
+    and saves them to a JSON file.
+
+    :param session: The requests session to update.
+    :param updated_cookies: Dictionary of new cookies to merge.
+    :param file_path: Path to the JSON file where cookies are stored.
+    """
+    try:
+        # Load existing cookies from file
+        with open(file_path, 'r') as file:
+            cookies = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        cookies = {}  # Start fresh if file doesn't exist or is corrupted
+
+    # Merge new cookies if provided
+    if updated_cookies:
+        cookies.update(updated_cookies)
+
+    # Update session with merged cookies
+    session.cookies.update(cookies)
+
+    # Save updated cookies back to file
+    with open(file_path, 'w') as file:
+        json.dump(cookies, file, indent=4)
+
+
 # default headers
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
@@ -66,6 +94,9 @@ def load_profile_page(username, cookies, headers, data):
     # Define the URL for the user's profile
     profile_url = f"https://www.instagram.com/{username}/"
 
+    # Update cookies in session   
+    update_and_save_cookies(session)
+
     # Send the POST request
     response = session.post(profile_url, headers=headers, data=data)
 
@@ -76,12 +107,6 @@ def load_profile_page(username, cookies, headers, data):
     else:
         print(f"Failed to load profile page for {username}. Status code: {response.status_code}")
 
-    # Get new cookies
-    updated_cookies = session.cookies.get_dict()
-
-    # Save updated cookies back to file
-    with open("cookies.json", "w") as f:
-        json.dump(cookies, f, indent=4)
 
 # Example usage
 username = "abugarcia_fishing"  # Replace with the actual username you want to search
@@ -94,6 +119,9 @@ load_profile_page(username, cookies, headers, data)
 def get_post_id(cookies, headers, data):
     # Define the URL
     profile_url = "https://www.instagram.com/graphql/query"
+
+    # Update cookies in session   
+    update_and_save_cookies(session)
     
     # Send the POST request
     response = session.post(profile_url, headers=headers, data=data)
@@ -124,6 +152,9 @@ last_post_id = get_post_id(cookies, headers, data)
 def open_last_post(last_post_id, cookies, headers, data):
     # Define the URL for the last post
     url = f"https://www.instagram.com/p/{last_post_id}"
+
+    # Update cookies in session   
+    update_and_save_cookies(session)
     
     # Send the POST request
     response = session.post(url, headers=headers, data=data)
@@ -149,6 +180,9 @@ def like_post(url, cookies, headers):
     else:
         headers['Referer'] = new_referer  # Add the Referer if not present
 
+    # Update cookies in session   
+    update_and_save_cookies(session)
+
     # Send the POST request
     response = session.post(url, headers=headers)
 
@@ -167,7 +201,7 @@ def like_post(url, cookies, headers):
             print("Response content:", response.text)
 
 # Example usage
-url = "https://www.instagram.com//api/v1/web/likes/3558649291755355143/like/"
+url = "https://www.instagram.com//api/v1/web/likes/3559410931047449099/like/"
 
 like_post(url, cookies, headers)
     
