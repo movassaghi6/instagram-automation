@@ -62,14 +62,9 @@ data = {
 
 # function to find and access a user profile by its username
 def load_profile_page(username, cookies, headers, data):
-    # Create a session instance
-    session = requests.Session()
 
     # Define the URL for the user's profile
     profile_url = f"https://www.instagram.com/{username}/"
-
-    # Add cookies to session
-    session.cookies.update(cookies)
 
     # Send the POST request
     response = session.post(profile_url, headers=headers, data=data)
@@ -83,9 +78,6 @@ def load_profile_page(username, cookies, headers, data):
 
     # Get new cookies
     updated_cookies = session.cookies.get_dict()
-
-    # Merge old and new cookies (update only changed fields)
-    cookies.update(updated_cookies)
 
     # Save updated cookies back to file
     with open("cookies.json", "w") as f:
@@ -102,10 +94,6 @@ load_profile_page(username, cookies, headers, data)
 def get_post_id(cookies, headers, data):
     # Define the URL
     profile_url = "https://www.instagram.com/graphql/query"
-    
-    # Create a session and add cookies
-    session = requests.Session()
-    session.cookies.update(cookies)
     
     # Send the POST request
     response = session.post(profile_url, headers=headers, data=data)
@@ -137,10 +125,6 @@ def open_last_post(last_post_id, cookies, headers, data):
     # Define the URL for the last post
     url = f"https://www.instagram.com/p/{last_post_id}"
     
-    # Create a session and add cookies
-    session = requests.Session()
-    session.cookies.update(cookies)
-    
     # Send the POST request
     response = session.post(url, headers=headers, data=data)
     
@@ -155,9 +139,6 @@ response = open_last_post(last_post_id, cookies, headers, data)
 
 # function for liking latest post
 def like_post(url, cookies, headers):
-    # Create a session and add cookies
-    session = requests.Session()
-    session.cookies.update(cookies)
 
     # Define the new referer URL
     new_referer = 'https://www.instagram.com/p/DFi3K0jRfwH/'
