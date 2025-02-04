@@ -56,6 +56,13 @@ def update_data(base_data, **kwargs):
     return updated_data
 
 
+# Dynamically add 'X-FB-Friendly-Name' for GraphQL requests
+def add_graphql_header(headers, friendly_name):
+    headers = headers.copy()  # Ensure the original dictionary remains unchanged
+    headers['X-FB-Friendly-Name'] = friendly_name
+    return headers
+
+
 # default headers
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
