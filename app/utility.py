@@ -107,3 +107,20 @@ def extract_first_code_and_pk(response: requests.Response) -> Tuple[Optional[str
     
     return first_code, first_pk
 
+# Access the last post's page
+def access_post_page(session: requests.Session, headers: Dict[str, str], post_id: str) -> requests.Response:
+    """
+    Accesses the URL of the last post.
+
+    Args:
+        session (requests.Session): The session object to make the request.
+        headers (Dict[str, str]): The headers to include in the request.
+        post_id (str): The ID of the post to access.
+
+    Returns:
+        requests.Response: The response object from the GET request.
+    """
+    response = session.get(f'https://www.instagram.com/p/{post_id}', headers=headers)
+    print("Accessing last post:", response.status_code)
+    return response
+
