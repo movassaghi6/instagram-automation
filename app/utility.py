@@ -1,5 +1,10 @@
-from typing import Dict
+from typing import Tuple, Optional, Dict
 from schemas import RequestData
+
+import requests
+import re
+
+
 
 def to_dict(request_data: RequestData) -> Dict:
     return request_data.dict()
@@ -57,6 +62,9 @@ def extract_all_values_from_html(response_text: str) -> Dict[str, str]:
     return extracted_values
 
 
+
+
+
 def update_request_data(request_data, extracted_values: Dict[str, str]):
     """
     Updates the request data with the extracted values if they differ from the current ones.
@@ -77,3 +85,25 @@ def update_request_data(request_data, extracted_values: Dict[str, str]):
                 updated_data = updated_data.update(**{key: value})
 
     return updated_data
+
+
+# Find the latest post id and its media's id
+def extract_first_code_and_pk(response: requests.Response) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Extracts the first post code and pk from the response JSON.
+
+    Args:
+        response (requests.Response): The response object containing the JSON data.
+
+    Returns:
+        Tuple[Optional[str], Optional[str]]: A tuple containing the first post code and pk, or None if not found.
+    """
+    # Extract the list of edges from the response JSON
+    edges = response.json().get('data', {}).get('xdt_api__v1__feed__user_timeline_graphql_connection', {}).get('edges', [])
+    
+    # Use a generator expression to find the first code and pk
+    first_code = next((edge.get('node', {}).get('code') for edge in edges if edge.get('node', {}).get('code')), None)
+    first_pk = next((str(edge.get('node', {}).get('pk')) for edge in edges if edge.get('node', {}).get('pk')), None)
+    
+    return first_code, first_pk
+
