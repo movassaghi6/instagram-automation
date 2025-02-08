@@ -107,6 +107,7 @@ def extract_first_code_and_pk(response: requests.Response) -> Tuple[Optional[str
     
     return first_code, first_pk
 
+
 # Access the last post's page
 def access_post_page(session: requests.Session, headers: Dict[str, str], post_id: str) -> requests.Response:
     """
@@ -124,3 +125,20 @@ def access_post_page(session: requests.Session, headers: Dict[str, str], post_id
     print("Accessing last post:", response.status_code)
     return response
 
+
+# Like the post
+def like_post(session: requests.Session, headers: Dict[str, str], post_media_id: str) -> requests.Response:
+    """
+    Likes the post with the given media ID.
+
+    Args:
+        session (requests.Session): The session object to make the request.
+        headers (Dict[str, str]): The headers to include in the request.
+        post_media_id (str): The media ID of the post to like.
+
+    Returns:
+        requests.Response: The response object from the POST request.
+    """
+    response = session.post(f'https://www.instagram.com/api/v1/web/likes/{post_media_id}/like/', headers=headers)
+    print("Liking last post:", response.status_code)
+    return response
