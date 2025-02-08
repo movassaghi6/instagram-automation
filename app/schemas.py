@@ -33,10 +33,3 @@ class RequestData(BaseModel):
     variables: Dict[str, Any] = {}
     server_timestamps:str=  'true'
     doc_id:str = '28149645878012614'
-
-    def to_dict(self) -> Dict[str, Any]:
-        return self.model_dump()
-
-    def update(self, **kwargs) -> 'RequestData':
-        updated_data = self.model_copy(update=kwargs)
-        return updated_data
