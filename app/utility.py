@@ -1,6 +1,6 @@
 from typing import Tuple, Optional, Dict
 from schemas import RequestData
-
+from cookie_manager.cookie_utils import cookies
 import requests
 import re
 
@@ -8,6 +8,9 @@ import re
 
 def to_dict(request_data: RequestData) -> Dict:
     return request_data.dict()
+
+def get_csrf_token() -> str:
+    return cookies.get("csrftoken", "")
 
 
 # Utility function to extract the first match of a regex pattern from a given text
