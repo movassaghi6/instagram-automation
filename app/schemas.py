@@ -2,6 +2,7 @@ import json
 import requests
 from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional
+from utility import get_csrf_token
 import time
 
 
@@ -33,3 +34,27 @@ class RequestData(BaseModel):
     variables: Dict[str, Any] = {}
     server_timestamps:str=  'true'
     doc_id:str = '28149645878012614'
+
+
+# Define Pydantic Data Model for Headers
+class RequestHeader(BaseModel):
+    User_Agent: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0"
+    Accept: str = "*/*"
+    Accept_Language: str = "en-US,en;q=0.5"
+    Accept_Encoding: str = "gzip, deflate, br, zstd"
+    Content_Type: str = "application/x-www-form-urlencoded"
+    X_BLOKS_VERSION_ID: str = "8cfdad7160042d1ecf8a994bb406cbfffb9a769a304d39560d6486a34ea8a53e"
+    X_FB_Friendly_Name: str = ""
+    X_FB_LSD: str = ""
+    X_CSRFToken: str = Field(default_factory=get_csrf_token)
+    X_IG_App_ID: str = "936619743392459"
+    X_ASBD_ID: str = "129477"
+    Origin: str = "https://www.instagram.com"
+    Connection: str = "keep-alive"
+    Referer: str = "https://www.instagram.com/abugarcia_fishing/"
+    Sec_Fetch_Dest: str = "empty"
+    Sec_Fetch_Mode: str = "cors"
+    Sec_Fetch_Site: str = "same-origin"
+    Upgrade_Insecure_Requests: str = "1"
+    Sec_Fetch_User: str = "?1"
+    Priority: str = "u=0, i"
