@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, Union
 from schemas import RequestData
 from cookie_manager.cookie_utils import cookies
 import requests
@@ -29,7 +29,7 @@ def extract_value(pattern: str, text: str) -> str:
     return match.group(1) if match else None
 
 
-def extract_all_values_from_html(response_text: str) -> Dict[str, str]:
+def extract_all_values_from_html(patterns: dict, response_text:Union[dict, str]) -> Dict[str, str]:
     """
     Extracts multiple predefined values from the given response text using predefined regex patterns.
 
@@ -39,22 +39,6 @@ def extract_all_values_from_html(response_text: str) -> Dict[str, str]:
     Returns:
         Dict[str, str]: A dictionary containing extracted values with corresponding labels.
     """
-    patterns = {
-        "av": r'actorID"\s*:\s*"(\d{17})"',
-        "__spin_t": r'"__spin_t"\s*[:=]\s*(\d+)',
-        "jazoest": r'jazoest\s*=\s*(\d+)',
-        "__spin_b": r'"__spin_b"\s*:\s*"([^"]+)"',
-        "__spin_r": r'"__spin_r"\s*:\s*(\d+)',
-        "hsi": r'"hsi"\s*[:=]\s*"(\d+)"',
-        "__hs": r'"haste_session"\s*[:=]\s*"([^"]+)"',
-        "__rev": r'"client_revision"\s*[:=]\s*(\d+)',
-        "lsd": r',\["LSD",\s*\[\],\s*\{"token":"([^"]+)"\}',
-        "fb_dtsg": r'"f":"([a-zA-Z0-9\-:]+)"',
-        "__comet_req": r'__comet_req\s*=\s*(\d+)',
-        "__a": r'__a\s*=\s*(\d+)',
-        "__user": r'__user\s*=\s*(\d+)'
-    }
-
     extracted_values = {}
     # Loop through each pattern and extract corresponding value from the response text
     for label, pattern in patterns.items():
@@ -66,28 +50,19 @@ def extract_all_values_from_html(response_text: str) -> Dict[str, str]:
 
 
 
-
-
-def update_request_data(request_data, extracted_values: Dict[str, str]):
+def update_model_fields(model, extracted_values: Dict[str, str]):
     """
-    Updates the request data with the extracted values if they differ from the current ones.
+    Updates the fields of a Pydantic model with the extracted values if they differ.
 
     Args:
-        request_data: The original request data to be updated.
-        extracted_values (Dict[str, str]): The extracted values to update the request data with.
+        model (T): The original Pydantic model instance.
+        extracted_values (Dict[str, str]): The extracted values to update the model with.
 
     Returns:
-        Updated request data.
+        T: A new instance of the model with updated values.
     """
-    updated_data = request_data
-    # Iterate over extracted values and update the request data if necessary
-    for key, value in extracted_values.items():
-        if key in updated_data.__dict__:  # Check if the attribute exists in request_data
-            if getattr(updated_data, key) != value:  # Compare current and extracted values
-                # Update the data if the values differ
-                updated_data = updated_data.update(**{key: value})
+    return model.model_copy(update=extracted_values)  
 
-    return updated_data
 
 
 # Find the latest post id and its media's id
