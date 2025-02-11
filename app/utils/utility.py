@@ -28,7 +28,7 @@ def generate_random_s_key() -> str:
 
 
 # Data: for random value of __req
-def generate_dynamic_req_key() -> str:
+def generate_random_req_key() -> str:
     """
     Generates a dynamic '__req' key.
 
