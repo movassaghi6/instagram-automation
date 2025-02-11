@@ -2,7 +2,7 @@ import json
 
 
 # Load Cookies
-with open("cookies.json", "r") as f:
+with open(r"\path-to-cookies\cookies.json", "r") as f:
      cookies =json.load(f)
 
 

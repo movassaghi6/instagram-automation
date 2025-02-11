@@ -1,16 +1,47 @@
 from typing import Tuple, Optional, Dict, Union
-from schemas import RequestData
 from cookie_manager.cookie_utils import cookies
 import requests
+import random
+import string
 import re
 
 
 
-def to_dict(request_data: RequestData) -> Dict:
-    return request_data.dict()
-
+# Header: for csrf_token value which can be found in cookies
 def get_csrf_token() -> str:
     return cookies.get("csrftoken", "")
+
+
+# Data:  for random value of __s
+def generate_random_s_key() -> str:
+    """
+    Generates a random '__s' key in the format 'xxxxxx:xxxxxx:xxxxxx' 
+    where each segment is a mix of letters and digits.
+
+    Returns:
+        str: Randomly generated '__s' value.
+    """
+    def random_segment(length=6):
+        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+
+    return f"{random_segment()}:{random_segment()}:{random_segment()}"
+
+
+# Data: for random value of __req
+def generate_dynamic_req_key() -> str:
+    """
+    Generates a dynamic '__req' key.
+
+    Returns:
+        str: The generated '__req' value.
+    """
+    # Randomly decide if the value should be a number or a number followed by a letter
+    if random.choice([True, False]):
+        # Generate a number between 1 and 20
+        return str(random.randint(1, 20))
+    else:
+        # Generate a number between 1 and 9 followed by a random lowercase letter
+        return f"{random.randint(1, 9)}{random.choice(string.ascii_lowercase)}"
 
 
 # Utility function to extract the first match of a regex pattern from a given text
@@ -49,20 +80,20 @@ def extract_all_values_from_html(patterns: dict, response_text:Union[dict, str])
     return extracted_values
 
 
-
-def update_model_fields(model, extracted_values: Dict[str, str]):
+def update_model_fields(model, extracted_values: Dict[str, str]) :
     """
-    Updates the fields of a Pydantic model with the extracted values if they differ.
+    Updates the fields of a Pydantic model with the extracted values if they differ
+    and returns a dictionary.
 
     Args:
-        model (T): The original Pydantic model instance.
+        model: The original Pydantic model instance.
         extracted_values (Dict[str, str]): The extracted values to update the model with.
 
     Returns:
-        T: A new instance of the model with updated values.
+        Dict[str, str]: A dictionary with alias names representation of the updated model.
     """
-    return model.model_copy(update=extracted_values)  
-
+    updated_model = model.model_copy(update=extracted_values)
+    return updated_model.model_dump(by_alias=True)  # Convert to dictionary with alias names
 
 
 # Find the latest post id and its media's id
