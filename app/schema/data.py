@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+import json
 from utils.utility import generate_dynamic_req_key, generate_random_s_key
-
 
 
 
@@ -31,6 +31,14 @@ class RequestData(BaseModel):
     variables: str = '{"data":{"count":12,"include_reel_media_seen_timestamp":true,"include_relationship_info":true,"latest_besties_reel_media":true,"latest_reel_media":true},"username":"abugarcia_fishing","__relay_internal__pv__PolarisIsLoggedInrelayprovider":true,"__relay_internal__pv__PolarisShareSheetV3relayprovider":false}'
     server_timestamps: str = 'true'
     doc_id: str = '9066276850131169'
-
+    
+    def set_username(self, username: str):
+        variables_dict = json.loads(self.variables)
+        variables_dict["username"] = username
+        self.variables = json.dumps(variables_dict)
+    
     class Config:
         populate_by_name = True  # Allows alias names in output
+
+    
+
