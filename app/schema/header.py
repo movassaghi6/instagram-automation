@@ -25,5 +25,8 @@ class RequestHeader(BaseModel):
     Sec_Fetch_User: str = Field("?1", alias="Sec-Fetch-User")
     Priority: str = "u=0, i"
     
+    def set_referer(self, username: str):
+        self.Referer = f"https://www.instagram.com/{username}/"
+    
     class Config:
         populate_by_name = True  # Allows alias names in output
