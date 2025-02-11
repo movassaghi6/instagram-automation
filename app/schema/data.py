@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 import json
-from utils.utility import generate_dynamic_req_key, generate_random_s_key
+from utils.utility import generate_random_s_key, generate_random_req_key
 
 
 
@@ -10,7 +10,7 @@ class RequestData(BaseModel):
     d: str = Field("www", alias="__d")
     user: str = Field("0", alias="__user")
     a: str = Field("1", alias="__a")
-    req: str = Field(default_factory=generate_dynamic_req_key, alias="__req")
+    req: str = Field(default_factory=generate_random_req_key, alias="__req")
     hs: str = Field("20122.HYP:instagram_web_pkg.2.1...1", alias="__hs")
     dpr: str = "1"
     ccg: str = Field("MODERATE", alias="__ccg")
