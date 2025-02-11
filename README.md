@@ -24,12 +24,11 @@ This Python script automates the process of searching for a user's profile and l
 3. Update `cookies.json` with your Instagram cookies (make sure you're logged in).
 
 ## Usage
-    ```
 
- . Run the script:
+1. Run the script:
 
     ```bash
-    python search_user.py
+    python .\app\main.py
     ```
 
-The script will load the profile page for the specified username.
+The script will load the profile page for the specified username and like the first post.
