@@ -151,3 +151,46 @@ def like_post(session: requests.Session, headers: Dict[str, str], post_media_id:
     response = session.post(f'https://www.instagram.com/api/v1/web/likes/{post_media_id}/like/', headers=headers)
     print("Liking last post:", response.status_code)
     return response
+
+
+# find doc_id based on fb_friendly_name
+def extract_doc_ids(session, url, fb_friendly_name, extract_func):
+    """
+    Fetches a webpage, identifies JavaScript resource links, and extracts values 
+    associated with a specified key in the scripts.
+
+    Args:
+        session (requests.Session): The active HTTP session.
+        url (str): The URL of the page to fetch.
+        fb_friendly_name (str): The key to search for in the JavaScript files.
+        extract_func (callable): A function that extracts key-value pairs from script content.
+
+    Returns:
+        dict: A dictionary containing extracted values where the key is fb_friendly_name 
+              and the value is the corresponding extracted data. Returns an empty dict if nothing is found.
+    """
+    try:
+        response = session.get(url, timeout=5)
+        if response.status_code != 200:
+            return {}
+
+        # Extract JavaScript resource links
+        script_links = re.findall(r'https://static\.cdninstagram\.com/rsrc\.php/[^\s"]+', response.text)
+        extracted_data = {}
+
+        # Compile a regex pattern for the target key
+        pattern = {fb_friendly_name: rf'__d\("{re.escape(fb_friendly_name)}[^"]*",\[\],\(function\(.*?\)\{{e\.exports="([^"]+)"\}}\),null\);'}
+
+        # Iterate through script links and extract relevant data
+        for link in script_links:
+            try:
+                js_response = session.get(link, timeout=5)
+                if js_response.status_code == 200:
+                    extracted_data.update(extract_func(pattern, js_response.text))  # Extract values using provided function
+            except requests.RequestException:
+                continue  # Skip script links that fail to load
+
+        return extracted_data
+
+    except requests.RequestException:
+        return {}  # Return empty dictionary if the main request fails
