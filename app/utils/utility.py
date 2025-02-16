@@ -154,7 +154,7 @@ def like_post(session: requests.Session, headers: Dict[str, str], post_media_id:
 
 
 # find doc_id based on fb_friendly_name
-def extract_doc_ids(session, url, fb_friendly_name, extract_func):
+def extract_doc_id(session, url, fb_friendly_name, extract_func):
     """
     Fetches a webpage, identifies JavaScript resource links, and extracts values 
     associated with a specified key in the scripts.
@@ -190,7 +190,9 @@ def extract_doc_ids(session, url, fb_friendly_name, extract_func):
             except requests.RequestException:
                 continue  # Skip script links that fail to load
 
-        return extracted_data
+        return extracted_data.get(fb_friendly_name)
+
 
     except requests.RequestException:
         return {}  # Return empty dictionary if the main request fails
+    
